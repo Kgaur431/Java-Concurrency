@@ -321,12 +321,81 @@ Thread States:-
         when the thread is waiting for another thread to finish then it goes into the blocked state. 
                 means let say we are at runnable state and we are trying to get the lock on the monitor object via synchronized keyword but we can't get the lock becoz some other thread is holding the lock then we goes into the blocked state.
         when the thread is waiting for a specific time then it goes into the timed waiting state.
-                like if we do t1.sleep(1000) then t1 goes into the timed waiting state.
+                like if we do t1.sleep(1000) then t1 goes into the timed waiting state. after the 1000 ms it goes into the runnable state.
         threads in waiting and timed-waiting states can usually be interrupted.
         img25.
          
          img26,  img27,  img28.
+         
+         New:-
+                thread is not started yet.
+                here we have created the thread.
+                it is first state in the thread life cycle.
+        
+        Runnable:-
+                when we do thread.start() then it goes into the runnable state.
+                it is ready to run but it is not running yet.
+        
+        Blocked:-
+                when the thread is waiting for the some reason but it is ready to run then it goes into the blocked state.
+        
+        Waiting:-
+                when the thread is waiting for some thing to happen then it goes into the waiting state.
+                like wait, join, take etc. 
+                here thread is waiting for external event to happen. 
+                
+        Timed Waiting:-
+                when the thread is waiting for a specific time then it goes into the timed waiting state.
+                here thread is waiting for a specific time.
+                
+        terminated:-
+                when the thread is done with the run method then it goes into the terminated state.
+        
+        why we called it as Runnable not Running ?
+                becoz the running of the thread is not controlled by the jvm, os scheduler is controlling the running of the thread or taking the thread and giving it to the cpu cores.
+                also JVM does not have the idea of the running of the thread.
+                so as we are not controlling the running of the thread so we called it as Runnable not Running. img44.
+                
+                
+Sleep():-
+        it is a static method of the thread class.
+        it is used to pause the execution of the current thread for a specific amount of time.
+        once the time is up, the thread goes back to the runnable state.
+        it throws InterruptedException which is a checked exception. so we have to wrap it in the try-catch block or throw it. img45.
+            like:-
+                    using try-catch block:- img46.
 
+ Scheduler:-
+        it is a os process that most of the os have.
+        it is responsible for scheduling the threads to be executed by  a core in the processor.
+        it is not always wait for the thread to finish before scheduling the next thread like context switching.          
+        it is tries to be fair to get the cpu time to all the threads.
+        it is non deterministic so we can't predict which thread will get the cpu time.
+            
+
+Parallelism vs Concurrency:-
+        Parallelism:-
+                let say we have scanerio where multiple threads running on multiple cores at the same time.
+                    like we have fewer threads than the cores or we have the same no. of threads as the cores.
+                    in this case the scheduler does not have to pause or end execution of any thread in between. so it is an easy job for the scheduler.
+                    so let say we have two threads and two cores then the scheduler can give the one thread to one core and another thread to another core both of them are running parallelly.
+                       it is known as parallelism. like we have multiple threads running on multiple cores at the same time. 
+               
+               if there is an situation where we have more threads than the cores then the what scheduler has to do ?
+                    scheduler will give the cpu with the time slice to the threads. so it is not running parallelly but it is running concurrently. 
+                    it make sure that all the threads get the cpu time.
+                    let say we take the snapshot of the time and say that all of the threads are running at the same time in the particular snapshot of time but it is not.
+                        only one thread is running at a time.
+                        overall if we take period of time, all the threads are happen to be running at the some point in that period depending on what the scheduler allocates.
+                        but at any given point of time only we can say that there are at most only as many threads running as there are cores in the processor.
+                        this is all about concurrency. 
+               
+       parallelism is running many diff tasks at the same time. 
+       concurrency is multiple tasks in progress at the same time. but not all of them are not running at the same time.
+       
+       concurrency can be done with single core as well as multiple cores cpu.
+         parallelism can be done with multiple cores cpu. 
+      
 
 Inter-Thread Communication:-
         we can use the wait and notify method to communicate b/w the threads. 
@@ -438,8 +507,78 @@ we can think it like this:-
                 means let say we want to process a 1000 number so we can have multiple threads, where each thread is processing a small portion of it like 500 number, another thread is processsing a small portion of it like 100 number and so on. all of them doing sharable work. 
                 so the overall project done.    
 
+Default execution mode of a process is Concurrent. 
+Process can be single threaded img40, or it can be multi threaded. img41. 
+ 
+Now a days processor has multiple cores:-
+        let say we have one java app which has written 10 print statement that will execute one after another and we have 4-core processor. so what if we leverage the power of the multi-core processor.
+            for that we need to execute some instruction in parallel. which means we need something that will send the some instruction to all those cores and they will execute it.
+            how we can do this ?
+                by using Threads.
+                like multiple threads can run on multiple cores at the same time.
+                so we can say Thread
+                    is a Unit of execution within a process.
+                    each thread does the work of a process.
+                    it has usually a shared objective like printing the 10 statement.
+                     it has shared resources like memory, heap storage. 
 
 
+when we start a Java application then there is an single process starts which is JVM process. like we start a MS-Word then there is an process for MS-Word. 
+        then JVM spin a bunch of threads like main thread (Responsible for running main method), garbage collector thread, finalizer thread etc.
+        if we need more threads then we can create using a Language API.
+
+Creating Threads:-
+        Classical Concurrency APIs
+            1.  Runnable Interface:-
+                        it means that this is something that can be run. 
+                        a class that implements the Runnable interface means this class can be run / execute.   we know that the class has main method that can be run. we are not talking about that.
+                            it means In java app, a piece of code can execute this thing.
+                            eg:-    
+                                    let say a car class implement the Runnable interface then it means that the car is the thing that can be run and the way in which we can run the car is by calling the run method. 
+                        run method does not return anything.
+                        
+                        lets say we want to execute some piece of code in seperate way. then below steps we have to follow.
+                                1.  Identify the code we want run in separate thread.
+                                2.  and the put that code in the run method of the class that implements the Runnable interface. let say if we to instance.run() which means we are running on the same thread that we don't want  img42.
+                                3.  so create a new Thread from that Runnable and pass the instance of the Runnable to the thread. img43. now the new thread will trigger and run the run method of the instance. so that code will run in the separate thread.
+                                4.  then start the thread.
+                                
+            2.  Thread Class:-
+
+Need of Synchronization:-
+        watch javabrains video.
+            
+            
+Volatile Keyword:-  watch video again if we have project related to this topic we left some topics. 
+            concurrency issue is being in two categories:-
+                1.  Synchronization :-
+                        like mutual exclusion, critical section, locks etc.
+                            mutual exclusion means only one thread can access the shared resource at a time.
+                        
+                2.  Visibility:-
+                        there has an visibility problem in the multi-threading.
+                            means let say we have a variable that is shared b/w the threads. 
+                                so one thread is updating the variable and another thread is reading the variable.
+                                so the thread that is reading the variable might not see the updated value of the variable.
+                                so we have to make sure that the thread that is reading the variable should see the updated value of the variable.
+                                so we have to make sure that the variable is visible to all the threads.
+                                so we have to use the volatile keyword.       
+                        
+                        visibility problem cause by keeping multiple copies of memory in the processor architecture.
+                                let say some value is read from the system memory into the processor cache. and some of the thread makes the update to the value in the cache.
+                                    so this update is not visible to the other threads that are running on the other cores. untill it is written back to the system memory.      
+                        
+                        the volatile keyword that we can attach to a variable. it means it marks teh variable as "do not cache".
+                            means always read from main memory and write to main memory. don't hold the copy of the variable in the cache.         
+            
+            
+            
+            
+            
+            
+            
+            
+                
 ```
 
 ### The OS scheduler is responsible for deciding which thread gets to use the CPU at any given time. This process is called context switching.4
