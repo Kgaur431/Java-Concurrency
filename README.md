@@ -446,4 +446,4 @@ we can think it like this:-
 ### The state of the lock is managed independently of the OS. The OS doesn't control the lock; it only schedules threads.
 
 
-also the there is a place which has __ that place which word will be there i am not getting so i provide you the context so correct it and explain it 
+
